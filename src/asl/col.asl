@@ -6,6 +6,15 @@ resource_needed(1).
    :  checking_cells & not building_finished
    <- !check_for_resources.
 
+// first found of an unneeded resource on current location
++!check_for_resources
+   : found(R) & not resource_needed(R)
+   <- ?my_pos(X,Y);
+      .print("first found of an uneeded resource(",R,") on current location(",X,",",Y,")");
+      +resource_at(R,X,Y);
+   	.broadcast(tell,resource_at(R,X,Y));
+      move_to(next_cell).
+
 // first found of a needed resource on current location
 +!check_for_resources
    :  resource_needed(R) & not resource_at(R,X,Y) & found(R)
@@ -15,14 +24,6 @@ resource_needed(1).
    	.broadcast(tell,resource_at(R,X,Y));
       !take(R,boss);
       !continue_mine.
-
-// first found of an unneeded resource on current location
-+!check_for_resources
-   :  not resource_at(R,X,Y) & found(R)
-   <- ?my_pos(X,Y);
-      .print("first found of an uneeded resource(",R,") on current location(",X,",",Y,")");
-   	.broadcast(tell,resource_at(R,X,Y));
-      move_to(next_cell).
 
 // following findings of a needed resource on current location
 +!check_for_resources
