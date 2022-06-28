@@ -7,15 +7,28 @@ resource_needed(1).
    <- !check_for_resources.
 
 +!check_for_resources
-   :  resource_needed(R) & found(R)
+   :  resource_needed(R) & resource_at(R,X,Y) & found(R)
    <- !stop_checking;
       !take(R,boss);
-      !continue_mine.   
+      !continue_mine.
+   
++!check_for_resources
+   :  resource_needed(R) & not resource_at(R,X,Y) & found(R)
+   <- !stop_checking;
+      ?my_pos(X,Y);
+   	.broadcast(tell,resource_at(R,X,Y));
+      !take(R,boss);
+      !continue_mine.
 
 +!check_for_resources
-   :  resource_needed(R) & not found(R)
-   <- .wait(100);
-   	  move_to(next_cell).
+   :  resource_needed(R) & resource_at(R,X,Y) & not found(R)
+   <- move_towards(X,Y).
+
++!check_for_resources
+   :  resource_needed(R) & not resource_at(R,X,Y) & not found(R)
+   <- .broadcast(untell,resource_at(R,X,Y));
+      .wait(100);
+      move_to(next_cell).
 
 +!stop_checking : true
    <- ?my_pos(X,Y);
@@ -25,7 +38,7 @@ resource_needed(1).
 +!take(R,B) : true
    <- 
       .wait(100);
-   	  mine(R);
+   	mine(R);
       !go(B);
       drop(R).
 
@@ -54,4 +67,3 @@ resource_needed(1).
 +building_finished : true
    <- .drop_all_desires;
       !go(boss).
-      
