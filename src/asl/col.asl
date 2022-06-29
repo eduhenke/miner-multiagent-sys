@@ -43,6 +43,13 @@ resource_needed(1).
       +checking_cells;
       !check_for_resources.
 
+// keep moving + found out that the resource was emptied out, broadcast to everyone
++!check_for_resources
+   :  resource_needed(R) & not resource_at(R,X,Y) & not found(R) & pos(help_collect_back,XBack,YBack)
+   <- .print("going back to initial position at location(",XBack,",",YBack,")");
+      !go(help_collect_back);
+      -pos(help_collect_back,XBack,YBack).
+
 // first go to location where resource was found
 +!check_for_resources
    :  resource_needed(R) & resource_at(R,X,Y) & not found(R) & not my_pos(X,Y) & not pos(help_collect_back,_,_)
