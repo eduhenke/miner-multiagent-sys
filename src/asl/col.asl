@@ -45,10 +45,17 @@ resource_needed(1).
 
 // first go to location where resource was found
 +!check_for_resources
-   :  resource_needed(R) & resource_at(R,X,Y) & not found(R) & not my_pos(X,Y)
+   :  resource_needed(R) & resource_at(R,X,Y) & not found(R) & not my_pos(X,Y) & not pos(help_collect_back,_,_)
    <- .print("helping to find resource(",R,") at location(",X,",",Y,")");
       ?my_pos(Xback,Yback);
       +pos(help_collect_back,Xback,Yback);
+      .wait(100);
+      move_towards(X,Y).
+
+// first go to location where resource was found
++!check_for_resources
+   :  resource_needed(R) & resource_at(R,X,Y) & not found(R) & not my_pos(X,Y) & pos(help_collect_back,_,_)
+   <- .print("helping to find resource(",R,") at location(",X,",",Y,")");
       .wait(100);
       move_towards(X,Y).
 
