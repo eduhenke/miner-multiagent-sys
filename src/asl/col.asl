@@ -43,7 +43,7 @@ resource_needed(1).
       +checking_cells;
       !check_for_resources.
 
-// keep moving + found out that the resource was emptied out, broadcast to everyone
+// go back to where the agent was when it went to help collect resources at other location
 +!check_for_resources
    :  resource_needed(R) & not resource_at(R,X,Y) & not found(R) & pos(help_collect_back,XBack,YBack)
    <- .print("going back to initial position at location(",XBack,",",YBack,")");
