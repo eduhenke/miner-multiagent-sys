@@ -21,6 +21,7 @@ resource_needed(1).
    <- !stop_checking;
       ?my_pos(X,Y);
       .print("first found of a needed resource(",R,") on current location(",X,",",Y,")");
+      +resource_at(R,X,Y);
    	.broadcast(tell,resource_at(R,X,Y));
       !take(R,boss);
       !continue_mine.
@@ -33,35 +34,30 @@ resource_needed(1).
       !take(R,boss);
       !continue_mine.
 
+// keep moving + found out that the resource was emptied out, broadcast to everyone
++!check_for_resources
+   :  resource_needed(R) & resource_at(R,X,Y) & not found(R) & my_pos(X,Y)
+   <- -resource_at(R,X,Y);
+      .print("found emptied out resource(",R,") at location(",X,",",Y,")");
+      .broadcast(untell,resource_at(R,X,Y));
+      +checking_cells;
+      !check_for_resources.
+
 // first go to location where resource was found
 +!check_for_resources
-   :  resource_needed(R) & resource_at(R,X,Y) & not found(R) & not pos(help_collect_back,A,B)
+   :  resource_needed(R) & resource_at(R,X,Y) & not found(R) & not my_pos(X,Y)
    <- .print("helping to find resource(",R,") at location(",X,",",Y,")");
       ?my_pos(Xback,Yback);
       +pos(help_collect_back,Xback,Yback);
+      .wait(100);
       move_towards(X,Y).
 
-// followings go to location where resource was found
+// default branch for moooove.
 +!check_for_resources
-   :  resource_needed(R) & resource_at(R,X,Y) & not found(R) & pos(help_collect_back,A,B)
-   <- move_towards(X,Y).
-
-// keep moving + found out that the resource was emptied out, broadcast to everyone
-+!check_for_resources
-   :  resource_needed(R) & not resource_at(R,X,Y) & not found(R) // & not pos(help_collect_back,_,_)
-   <- .broadcast(untell,resource_at(R,X,Y));
+   :  true
+   <- .print("MOVIIING");
       .wait(100);
       move_to(next_cell).
-
-// // same as above, but tries to go back when resource emptied out
-// +!check_for_resources
-//    :  resource_needed(R) & not resource_at(R,X,Y) & not found(R) & pos(help_collect_back,_,_)
-//    <- .broadcast(untell,resource_at(R,X,Y));
-//       !go(help_collect_back);
-//       -pos(help_collect_back,_,_);
-//       .wait(100);
-//       move_to(next_cell).
-
 
 +!stop_checking : true
    <- ?my_pos(X,Y);
